@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bob's Jukebox — Words & Wheels</title>
+    <meta name="description" content="Original songs by Bob, made with Suno AI. Pull up a chair and pick a tune.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --navy: #1a2a4a;
+            --navy-light: #2a3a6a;
+            --gold: #d4a849;
+            --gold-light: #e8c97a;
+            --cream: #f7f3ed;
+            --dark: #0f1825;
+            --red: #c0392b;
+            --red-light: #e74c3c;
+            --chrome: linear-gradient(180deg, #e8e8e8 0%, #b8b8b8 50%, #d0d0d0 100%);
+        }
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: var(--dark);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /* BACKGROUND */
+        .jukebox-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(212,168,73,0.08) 0%, transparent 60%),
+                linear-gradient(180deg, #0f1825 0%, #1a2440 50%, #0f1825 100%);
+            z-index: -1;
+        }
+        /* NAVBAR */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26,42,74,0.95);
+            backdrop-filter: blur(12px);
+            padding: 0 24px;
+        }
+        .nav-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+        .nav-logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--gold);
+            text-decoration: none;
+            letter-spacing: 1px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .nav-links {
+            display: flex;
+            gap: 22px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--gold); }
+        /* JUKEBOX HERO */
+        .jukebox-hero {
+            text-align: center;
+            padding: 50px 24px 20px;
+        }
+        .jukebox-title {
+            font-size: 52px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(212,168,73,0.4), 0 4px 8px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+        }
+        .jukebox-subtitle {
+            font-size: 16px;
+            color: rgba(255,255,255,0.6);
+            font-family: Arial, sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        /* JUKEBOX MACHINE */
+        .jukebox-machine {
+            max-width: 560px;
+            margin: 30px auto;
+            background: linear-gradient(180deg, #3a2a1a 0%, #2a1a0a 100%);
+            border-radius: 24px 24px 12px 12px;
+            padding: 24px;
+            box-shadow: 
+                0 0 60px rgba(212,168,73,0.15),
+                0 20px 50px rgba(0,0,0,0.5),
+                inset 0 2px 4px rgba(255,255,255,0.1);
+            border: 2px solid rgba(212,168,73,0.3);
+            position: relative;
+        }
+        /* JUKEBOX TOP DOME */
+        .jukebox-dome {
+            width: 100%;
+            height: 16px;
+            background: linear-gradient(90deg, transparent 0%, rgba(212,168,73,0.5) 30%, rgba(232,201,122,0.8) 50%, rgba(212,168,73,0.5) 70%, transparent 100%);
+            border-radius: 50%;
+            margin-bottom: 16px;
+        }
+        /* NOW PLAYING DISPLAY */
+        .now-playing-display {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid rgba(212,168,73,0.2);
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .np-label {
+            font-size: 11px;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-family: Arial, sans-serif;
+            margin-bottom: 10px;
+        }
+        .np-title {
+            font-size: 22px;
+            color: var(--gold-light);
+            margin-bottom: 6px;
+            min-height: 28px;
+            text-shadow: 0 0 10px rgba(232,201,122,0.3);
+        }
+        .np-empty {
+            color: rgba(255,255,255,0.3);
+            font-size: 16px;
+            font-style: italic;
+        }
+        /* ANIMATED EQUALIZER BARS */
+        .equalizer {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 30px;
+            margin-top: 8px;
+        }
+        .equalizer span {
+            display: block;
+            width: 5px;
+            background: var(--gold);
+            border-radius: 2px;
+            height: 4px;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+        .equalizer.active span {
+            opacity: 1;
+            animation: eq 0.8s infinite ease-in-out;
+        }
+        .equalizer.active span:nth-child(1) { animation-delay: 0s; }
+        .equalizer.active span:nth-child(2) { animation-delay: 0.15s; }
+        .equalizer.active span:nth-child(3) { animation-delay: 0.3s; }
+        .equalizer.active span:nth-child(4) { animation-delay: 0.1s; }
+        .equalizer.active span:nth-child(5) { animation-delay: 0.25s; }
+        .equalizer.active span:nth-child(6) { animation-delay: 0.05s; }
+        .equalizer.active span:nth-child(7) { animation-delay: 0.2s; }
+        @keyframes eq {
+            0%, 100% { height: 4px; }
+            50% { height: 28px; }
+        }
+        /* SUNO EMBED AREA */
+        .suno-embed-area {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid rgba(212,168,73,0.2);
+            margin-bottom: 16px;
+            display: none;
+        }
+        .suno-embed-area.active { display: block; }
+        .suno-embed-area iframe {
+            width: 100%;
+            min-height: 150px;
+            border: none;
+            border-radius: 8px;
+        }
+        /* JUKEBOX BUTTONS ROW */
+        .jukebox-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .jukebox-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid rgba(212,168,73,0.3);
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            color: var(--gold);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .jukebox-btn:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212,168,73,0.3);
+        }
+        .jukebox-btn:active { transform: scale(0.92); }
+        /* SONG LIST */
+        .song-list-section {
+            max-width: 700px;
+            margin: 40px auto 60px;
+            padding: 0 24px;
+        }
+        .song-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .song-list-title {
+            font-size: 24px;
+            color: var(--gold);
+            font-weight: normal;
+        }
+        .song-count {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            font-family: Arial, sans-serif;
+        }
+        .song-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .song-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .song-item:hover {
+            background: rgba(212,168,73,0.08);
+            border-color: rgba(212,168,73,0.3);
+            transform: translateX(4px);
+        }
+        .song-item.playing {
+            background: rgba(212,168,73,0.12);
+            border-color: var(--gold);
+        }
+        .song-number {
+            font-size: 20px;
+            color: rgba(212,168,73,0.5);
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            min-width: 32px;
+            text-align: center;
+        }
+        .song-item.playing .song-number {
+            color: var(--gold);
+        }
+        .song-info {
+            flex: 1;
+        }
+        .song-title {
+            font-size: 17px;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .song-item.playing .song-title {
+            color: var(--gold-light);
+        }
+        .song-meta {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            font-family: Arial, sans-serif;
+        }
+        .song-play-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(212,168,73,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .song-item:hover .song-play-icon {
+            border-color: var(--gold);
+            background: rgba(212,168,73,0.1);
+        }
+        .song-item.playing .song-play-icon {
+            background: var(--gold);
+            color: var(--dark);
+            border-color: var(--gold);
+        }
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        /* FOOTER */
+        footer {
+            background: rgba(26,42,74,0.95);
+            text-align: center;
+            padding: 24px;
+            border-top: 1px solid rgba(212,168,73,0.1);
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+        .footer-links a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+        }
+        .footer-links a:hover { color: var(--gold); }
+        .footer-credit {
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+        }
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .jukebox-title { font-size: 36px; }
+            .nav-links { gap: 14px; }
+            .nav-links a { font-size: 12px; }
+            .song-item { padding: 12px 14px; gap: 10px; }
+            .song-title { font-size: 15px; }
+            .jukebox-machine { margin: 20px 12px; padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="jukebox-bg"></div>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="nav-inner">
+        <a class="nav-logo" href="https://wordsandwheels.net">WORDS &amp; WHEELS</a>
+        <ul class="nav-links">
+            <li><a href="https://wordsandwheels.net">Home</a></li>
+            <li><a href="https://resuter51-ops.github.io/bobs-book-arcade/">Arcade</a></li>
+            <li><a style="color: var(--gold);">Jukebox</a></li>
+            <li><a href="https://wordsandwheels.net/blog/bob-s-thoughts">Bob's Thoughts</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- JUKEBOX HERO -->
+<div class="jukebox-hero">
+    <h1 class="jukebox-title">Bob's Jukebox</h1>
+    <p class="jukebox-subtitle">Original Songs · Made with Suno AI</p>
+</div>
+
+<!-- JUKEBOX MACHINE -->
+<div class="jukebox-machine">
+    <div class="jukebox-dome"></div>
+    
+    <!-- NOW PLAYING DISPLAY -->
+    <div class="now-playing-display" id="np-display">
+        <div class="np-label">Now Playing</div>
+        <div class="np-title" id="np-title">
+            <span class="np-empty">Pick a song below...</span>
+        </div>
+        <div class="equalizer" id="equalizer">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- SUNO EMBED -->
+    <div class="suno-embed-area" id="suno-embed-area">
+        <iframe id="suno-iframe" src="" allow="autoplay; encrypted-media" loading="lazy"></iframe>
+    </div>
+
+    <!-- CONTROL BUTTONS (decorative) -->
+    <div class="jukebox-controls">
+        <button class="jukebox-btn" onclick="prevSong()" title="Previous">⏮</button>
+        <button class="jukebox-btn" onclick="stopSong()" title="Stop">⏹</button>
+        <button class="jukebox-btn" onclick="nextSong()" title="Next">⏭</button>
+    </div>
+</div>
+
+<!-- SONG LIST -->
+<div class="song-list-section">
+    <div class="song-list-header">
+        <h2 class="song-list-title">Select a Track</h2>
+        <span class="song-count" id="song-count"></span>
+    </div>
+    <div class="song-list" id="song-list">
+        <!-- Songs render here via JS -->
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-links">
+        <a href="https://wordsandwheels.net">Home</a>
+        <a href="https://wordsandwheels.net">Books</a>
+        <a href="https://resuter51-ops.github.io/bobs-book-arcade/">Arcade</a>
+        <a style="color: var(--gold);">Jukebox</a>
+        <a href="https://wordsandwheels.net/blog/bob-s-thoughts">Bob's Thoughts</a>
+    </div>
+    <p class="footer-credit">Words and Wheels &bull; Stories Worth Reading &bull; &copy; 2026</p>
+</footer>
+
+<script>
+// ============================================
+// SONG LIST — Add your Suno songs here
+// ============================================
+// To add a song: 
+//   1. Go to your song on Suno.com
+//   2. Click "Share" and copy the link
+//   3. Add a new entry below with the URL, title, and genre
+//
+// The embed URL format is: https://suno.com/song/[song-id]
+// Just paste your Suno share URL in the "url" field.
+
+var songs = [
+    // EXAMPLE (replace with your real songs):
+    // {
+    //     title: "My First Song",
+    //     genre: "Country / Folk",
+    //     url: "https://suno.com/song/abc123"
+    // },
+    // {
+    //     title: "Another Tune",
+    //     genre: "Rock",
+    //     url: "https://suno.com/song/def456"
+    // },
+];
+
+// ============================================
+// JUKEBOX LOGIC
+// ============================================
+var currentSongIndex = -1;
+
+function renderSongs() {
+    var list = document.getElementById('song-list');
+    document.getElementById('song-count').textContent = songs.length + ' track' + (songs.length !== 1 ? 's' : '');
+    
+    if (songs.length === 0) {
+        list.innerHTML = '<div class="empty-state">' +
+            '<div class="empty-state-icon">🎵</div>' +
+            '<p>No songs yet — check back soon!</p>' +
+            '<p style="font-size:13px;margin-top:8px;">Bob\'s original tracks will appear here.</p>' +
+            '</div>';
+        return;
+    }
+    
+    list.innerHTML = songs.map(function(song, idx) {
+        var isPlaying = idx === currentSongIndex;
+        var playIcon = isPlaying ? '♪' : '▶';
+        return '<div class="song-item' + (isPlaying ? ' playing' : '') + '" onclick="playSong(' + idx + ')">' +
+            '<div class="song-number">' + (idx + 1).toString().padStart(2, '0') + '</div>' +
+            '<div class="song-info">' +
+                '<div class="song-title">' + song.title + '</div>' +
+                '<div class="song-meta">' + song.genre + '</div>' +
+            '</div>' +
+            '<div class="song-play-icon">' + playIcon + '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function playSong(idx) {
+    if (idx < 0 || idx >= songs.length) return;
+    currentSongIndex = idx;
+    var song = songs[idx];
+    
+    // Update now playing display
+    document.getElementById('np-title').innerHTML = song.title;
+    document.getElementById('equalizer').classList.add('active');
+    
+    // Load Suno embed
+    var embedArea = document.getElementById('suno-embed-area');
+    var iframe = document.getElementById('suno-iframe');
+    // Suno embed URL: convert share URL to embed URL
+    var embedUrl = song.url;
+    // If it's a suno.com/song/xxx URL, convert to embed format
+    if (embedUrl.includes('suno.com/song/')) {
+        embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
+    }
+    iframe.src = embedUrl;
+    embedArea.classList.add('active');
+    
+    // Re-render song list to update playing state
+    renderSongs();
+    
+    // Scroll to jukebox so the player is visible
+    document.querySelector('.jukebox-machine').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function stopSong() {
+    currentSongIndex = -1;
+    document.getElementById('np-title').innerHTML = '<span class="np-empty">Pick a song below...</span>';
+    document.getElementById('equalizer').classList.remove('active');
+    document.getElementById('suno-embed-area').classList.remove('active');
+    document.getElementById('suno-iframe').src = '';
+    renderSongs();
+}
+
+function nextSong() {
+    if (songs.length === 0) return;
+    var next = currentSongIndex + 1;
+    if (next >= songs.length) next = 0;
+    playSong(next);
+}
+
+function prevSong() {
+    if (songs.length === 0) return;
+    var prev = currentSongIndex - 1;
+    if (prev < 0) prev = songs.length - 1;
+    playSong(prev);
+}
+
+// Init
+renderSongs();
+</script>
+
+</body>
+</html>
