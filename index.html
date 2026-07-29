@@ -457,22 +457,17 @@ var songs = [
     {
         title: "The Breakroom Brigade I",
         genre: "Country",
-        url: "https://suno.com/s/qRvSTFythxztcWR6"
-    },
-    {
-        title: "The Breakroom Brigade II",
-        genre: "Country",
-        url: "https://suno.com/s/fQM"
+        embedUrl: "https://suno.com/embed/8c116379-f936-4670-a6b2-da7a47092eec"
     },
     {
         title: "Saccerin I",
         genre: "70s Bubblegum",
-        url: "https://suno.com/s/wobQcHyk0r2gdNg5"
+        embedUrl: "https://suno.com/embed/3ab32f26-ccae-4fdb-9b5a-7db2a8831d07"
     },
     {
         title: "Saccerin II",
         genre: "70s Bubblegum",
-        url: "https://suno.com/s/K8B2WYdOr2edEXGq"
+        embedUrl: "https://suno.com/embed/c6a3ad7e-33a1-4b3c-b3a3-60c8dfded7f9"
     },
 ];
 
@@ -520,13 +515,7 @@ function playSong(idx) {
     // Load Suno embed
     var embedArea = document.getElementById('suno-embed-area');
     var iframe = document.getElementById('suno-iframe');
-    // Suno embed URL: convert share URL to embed URL
-    var embedUrl = song.url;
-    // If it's a suno.com/song/xxx URL, convert to embed format
-    if (embedUrl.includes('suno.com/song/')) {
-        embedUrl = embedUrl.replace('suno.com/song/', 'suno.com/embed/');
-    }
-    iframe.src = embedUrl;
+    iframe.src = song.embedUrl;
     embedArea.classList.add('active');
     
     // Re-render song list to update playing state
