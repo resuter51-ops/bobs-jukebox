@@ -355,6 +355,24 @@
             font-size: 13px;
             color: rgba(255,255,255,0.3);
         }
+        /* COPY PROTECTION */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        img, .song-item, .jukebox-machine, .now-playing-display {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+        .suno-embed-area iframe {
+            pointer-events: auto;
+        }
+
         /* RESPONSIVE */
         @media (max-width: 600px) {
             .jukebox-title { font-size: 36px; }
@@ -454,24 +472,24 @@
 // Just paste your Suno share URL in the "url" field.
 
 var songs = [
-    { title: "The Breakroom Brigade I",   genre: "Country",         embedUrl: "https://suno.com/embed/8c116379-f936-4670-a6b2-da7a47092eec" },
-    { title: "The Breakroom Brigade II",  genre: "Country",         embedUrl: "https://suno.com/embed/bda5e30b-eeb6-43e9-83b0-7a8fe0a895b2" },
-    { title: "Saccerin I",                genre: "70s Bubblegum",   embedUrl: "https://suno.com/embed/3ab32f26-ccae-4fdb-9b5a-7db2a8831d07" },
-    { title: "Saccerin II",               genre: "70s Bubblegum",   embedUrl: "https://suno.com/embed/c6a3ad7e-33a1-4b3c-b3a3-60c8dfded7f9" },
-    { title: "Ye Ha I",                   genre: "Bluegrass",       embedUrl: "https://suno.com/embed/c90ff2fe-975e-45d2-b5ff-8efa139675e6" },
-    { title: "Ye Ha II",                  genre: "Bluegrass",       embedUrl: "https://suno.com/embed/fe12749c-ab93-4347-b100-3f1b66983b72" },
-    { title: "Last Thing on My Mind I",   genre: "Bluegrass",       embedUrl: "https://suno.com/embed/7c412172-a317-4d82-a9f5-c458331ccc30" },
-    { title: "Last Thing on My Mind II",  genre: "Bluegrass",       embedUrl: "https://suno.com/embed/9833a312-f0cf-4d14-a9ac-ab75f2561b07" },
-    { title: "Go Abner Go I",             genre: "Bluegrass",       embedUrl: "https://suno.com/embed/5ffe43f1-51a4-4d05-bac6-62e6f3002e71" },
-    { title: "Go Abner Go II",            genre: "Bluegrass",       embedUrl: "https://suno.com/embed/0155336c-9aa0-40b5-b423-e3aaac60227a" },
-    { title: "Mountain Duel I",           genre: "Bluegrass",       embedUrl: "https://suno.com/embed/675ef3b3-5422-4192-a734-b349acdd8a36" },
-    { title: "Mountain Duel II",          genre: "Bluegrass",       embedUrl: "https://suno.com/embed/e90312ce-5383-492e-a0eb-777782de7710" },
-    { title: "Busy Busy CNA I",           genre: "60s Pop",         embedUrl: "https://suno.com/embed/b020faa9-e84d-46b7-bb39-30b09564e68e" },
-    { title: "Busy Busy CNA II",          genre: "60s Pop",         embedUrl: "https://suno.com/embed/72718632-8e26-49ad-9708-741479a1c808" },
-    { title: "CNA Rodeo I",               genre: "Rockabilly",      embedUrl: "https://suno.com/embed/a8581185-ced5-4b99-a818-70a9501f1c0d" },
-    { title: "CNA Rodeo II",              genre: "Rockabilly",      embedUrl: "https://suno.com/embed/9d52d474-b8e7-4551-86ad-492631305d7b" },
-    { title: "Swingin' Through the Night I",  genre: "50s Bebop Jazz", embedUrl: "https://suno.com/embed/2865be65-846b-41f5-a48a-c5c5cf60d84f" },
-    { title: "Swingin' Through the Night II", genre: "50s Bebop Jazz", embedUrl: "https://suno.com/embed/32372878-5fc8-4476-abce-2ffce9f7713a" },
+    { t: "The Breakroom Brigade I", g: "Country", e: "=MWZlJTOwcDNhdTYk1iMiZTYtAzN2QTL2MTOm1SO3MjNxEzY48CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "The Breakroom Brigade II", g: "Country", e: "=IjY1kDOhBTZmhTY30CMiNDOtkTZzQTL2IWZl1iYwMTZ1EGZi9CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Saccerin I", g: "70s Bubblegum", e: "=cDMkFzM4gTYyIGZ30SY1IWOtIGZmRTLlF2Yj1iNyYmMzIWYz8CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Saccerin II", g: "70s Bubblegum", e: "=kjZ3QWZkZGZ4MGM20yMhNjYtM2MiRTLxE2Mz0SZ3QWYzEmNj9CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Ye Ha I", g: "Bluegrass", e: "=YTZ1cjN5MTMhZWZ40iZmVjYtIDZ1QTLlVzN50SZmJjZmBTOj9CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Ye Ha II", g: "Bluegrass", e: "=IzNiNDO5YjNiFjZz0CMwEjYtcDNzQTLzkjYh1yY5QzNyETZm9CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Last Thing on My Mind I", g: "Bluegrass", e: "=AzMjN2YxMzM4UDNj1SNmlTYtIDOkRTL3EzMh1iM3EjMxQzY38CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Last Thing on My Mind II", g: "Bluegrass", e: "=cDMiFjN1IjZ1cjYh1yYhlTYtQTMkRTLmNGMm1iMxMTYzMDO58CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Go Abner Go I", g: "Bluegrass", e: "=EzNlJDMwMjZ2UmM20iNjFmYtUDMkRTL0EWM10SMmNDNlZmZ18CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Go Abner Go II", g: "Bluegrass", e: "=E2NyIDM2MWYhF2Ml1yMyQjYtUjYwQTLwEWY50yY2MzM1UTMw8CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Mountain Duel I", g: "Bluegrass", e: "=YzMhhDZkNWY5QzMi1CNzcTYtITOxQTLyIDN10yMiNjZlVzN28CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Mountain Duel II", g: "Bluegrass", e: "=ATM3cTZkJDO3czN30iYlBTYtUmM5QTLzgzM10SZjJTMzATOl9CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Busy Busy CNA I", g: "60s Pop", e: "=UGO2UGN2UTOwIGMz0SOzImYtcjY2QTLkRDOl1SOhFmZwIDMi9CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Busy Busy CNA II", g: "60s Pop", e: "=gDM4MWMhlzN0EDN30COwcTOtQWY5QTL2ITZ40iMzYDOxcjM38CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "CNA Rodeo I", g: "Rockabilly", e: "=QGMjFjZxATN5EGM30COxgTYtkTOiRTL1QWZj1SN4ETM4UDOh9CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "CNA Rodeo II", g: "Rockabilly", e: "=I2NkVDMzEzM2ITO00CZhZDOtETN1QTL3UGOi1CN3QDZyUDZ58CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Swingin' Through the Night I", g: "50s Bebop Jazz", e: "=YGN4QGM2Y2Y1MWNj1SY4QTYtUjZxQTLiZDN40SN2UmY1YDOy8CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" },
+    { t: "Swingin' Through the Night II", g: "50s Bebop Jazz", e: "=E2MxczNmlTZjZmZy0SZjJWYtYzN0QTL4MmZ10CO3gjM3MjMz8CZlJWbl9SbvNmLv5Wdz9yL6MHc0RHa" }
 ];
 
 // ============================================
@@ -518,7 +536,10 @@ function playSong(idx) {
     // Load Suno embed
     var embedArea = document.getElementById('suno-embed-area');
     var iframe = document.getElementById('suno-iframe');
-    iframe.src = song.embedUrl;
+    // Decode obfuscated embed URL
+    var encoded = song.e;
+    var decoded = encoded.split('').reverse().join('');
+    iframe.src = atob(decoded);
     embedArea.classList.add('active');
     
     // Re-render song list to update playing state
@@ -553,6 +574,41 @@ function prevSong() {
 
 // Init
 renderSongs();
+</script>
+
+
+<!-- COPY PROTECTION -->
+<script>
+// Disable right-click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+// Disable common keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.key === 'F12') { e.preventDefault(); return false; }
+    // Ctrl+Shift+I (Inspector)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c')) { e.preventDefault(); return false; }
+    // Ctrl+U (View Source)
+    if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); return false; }
+    // Ctrl+S (Save)
+    if (e.ctrlKey && (e.key === 's' || e.key === 'S')) { e.preventDefault(); return false; }
+    // Ctrl+A (Select All) - allow only outside iframe
+    if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) { e.preventDefault(); return false; }
+});
+
+// Prevent dragging of images and elements
+document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+// Clear console periodically (makes inspection harder)
+setInterval(function() {
+    try { console.clear(); } catch(e) {}
+}, 3000);
 </script>
 
 </body>
