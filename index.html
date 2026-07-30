@@ -522,8 +522,8 @@ function renderSongs() {
         return '<div class="song-item' + (isPlaying ? ' playing' : '') + '" onclick="playSong(' + idx + ')">' +
             '<div class="song-number">' + (idx + 1).toString().padStart(2, '0') + '</div>' +
             '<div class="song-info">' +
-                '<div class="song-title">' + song.title + '</div>' +
-                '<div class="song-meta">' + song.genre + '</div>' +
+                '<div class="song-title">' + song.t + '</div>' +
+                '<div class="song-meta">' + song.g + '</div>' +
             '</div>' +
             '<div class="song-play-icon">' + playIcon + '</div>' +
         '</div>';
@@ -536,7 +536,7 @@ function playSong(idx) {
     var song = songs[idx];
     
     // Update now playing display
-    document.getElementById('np-title').innerHTML = song.title;
+    document.getElementById('np-title').innerHTML = song.t;
     document.getElementById('equalizer').classList.add('active');
     
     // Load Suno embed
