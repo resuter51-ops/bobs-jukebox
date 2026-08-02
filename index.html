@@ -532,10 +532,29 @@ function renderSongs() {
     }).join('');
 }
 
+// Hidden audio tracker — used to detect when song ends and stop Suno's loop
+var audioTracker = null;
+var stopTimer = null;
+
+function stopLoopTracker() {
+    if (audioTracker) {
+        audioTracker.pause();
+        audioTracker.src = '';
+        audioTracker = null;
+    }
+    if (stopTimer) {
+        clearTimeout(stopTimer);
+        stopTimer = null;
+    }
+}
+
 function playSong(idx) {
     if (idx < 0 || idx >= songs.length) return;
     currentSongIndex = idx;
     var song = songs[idx];
+    
+    // Stop any previous tracker
+    stopLoopTracker();
     
     // Update now playing display
     document.getElementById('np-title').innerHTML = song.t;
@@ -548,10 +567,37 @@ function playSong(idx) {
     var encoded = song.e;
     var decoded = encoded.split('').reverse().join('');
     var embedUrl = atob(decoded);
+    // Extract song ID for the CDN audio URL
+    var songId = embedUrl.split('/').pop();
+    var audioUrl = 'https://cdn1.suno.ai/' + songId + '.mp3';
     // Append autoplay parameter so song starts playing immediately
     embedUrl += (embedUrl.indexOf('?') >= 0 ? '&' : '?') + 'autoplay=1';
     iframe.src = embedUrl;
     embedArea.classList.add('active');
+    
+    // Create a hidden, muted audio element to track song duration
+    // When it fires 'ended', we clear the Suno iframe to stop the loop
+    audioTracker = new Audio();
+    audioTracker.muted = true;
+    audioTracker.preload = 'metadata';
+    audioTracker.src = audioUrl;
+    audioTracker.addEventListener('loadedmetadata', function() {
+        // Set a timer for the song duration (+3s buffer for Suno embed loading delay)
+        var dur = audioTracker.duration;
+        if (dur && isFinite(dur) && dur > 0) {
+            if (stopTimer) clearTimeout(stopTimer);
+            stopTimer = setTimeout(function() {
+                // Song has finished — stop the Suno loop
+                stopSong();
+            }, (dur + 3) * 1000);
+        }
+    });
+    audioTracker.addEventListener('ended', function() {
+        // Song ended — stop the Suno loop
+        stopSong();
+    });
+    // Start the muted tracker (won't be heard, but tracks playback position)
+    audioTracker.play().catch(function() {});
     
     // Re-render song list to update playing state
     renderSongs();
@@ -561,6 +607,7 @@ function playSong(idx) {
 }
 
 function stopSong() {
+    stopLoopTracker();
     currentSongIndex = -1;
     document.getElementById('np-title').innerHTML = '<span class="np-empty">Pick a song below...</span>';
     document.getElementById('equalizer').classList.remove('active');
