@@ -547,7 +547,10 @@ function playSong(idx) {
     // Decode obfuscated embed URL
     var encoded = song.e;
     var decoded = encoded.split('').reverse().join('');
-    iframe.src = atob(decoded);
+    var embedUrl = atob(decoded);
+    // Append autoplay parameter so song starts playing immediately
+    embedUrl += (embedUrl.indexOf('?') >= 0 ? '&' : '?') + 'autoplay=1';
+    iframe.src = embedUrl;
     embedArea.classList.add('active');
     
     // Re-render song list to update playing state
